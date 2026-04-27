@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>金運が上がるサイト</title>
+    <style>
+        :root {
+            --pop-size: 10rem;
+            --giant-size: 50rem;
+            --heart-size: 100px;
+            --sparkle-dist: 1200px;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --pop-size: 6rem;
+                --giant-size: 18rem;
+                --heart-size: 90px;
+                --sparkle-dist: 450px;
+            }
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #fffafb;
+            touch-action: none;
+            font-family: sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            position: fixed;
+        }
+        
+        #bg-layer { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; z-index: 1; opacity: 0.5; pointer-events: none; 
+        }
+        .panel { 
+            flex: 1; height: 100%; 
+            transition: background-color 1.5s ease;
+            pointer-events: none;
+            animation: panelFlip 8s infinite;
+            transform-style: preserve-3d;
+        }
+        
+        @keyframes panelFlip {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+        }
+
+        #heart-layer { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 10; pointer-events: none;
+        }
+        
+        .heart-wrapper {
+            position: absolute; 
+            width: var(--heart-size); 
+            height: var(--heart-size);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            animation: fuyofuyo 11s infinite alternate ease-in-out;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .aura {
+            position: absolute; width: 85%; height: 85%; border-radius: 50%;
+            background: conic-gradient(from 0deg, #ffb7b7, #fffbb7, #b7ffb7, #b7ffff, #b7d8ff, #e2b7ff, #ffb7b7);
+            filter: blur(15px); opacity: 0.7; 
+            animation: auraSpin 3s infinite linear; 
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        @keyframes auraSpin { 
+            0%{transform:rotate(0deg) scale(1);} 
+            50%{transform:rotate(180deg) scale(1.2);} 
+            100%{transform:rotate(360deg) scale(1);} 
+        }
+
+        .heart { 
+            font-size: calc(var(--heart-size) * 0.5); 
+            pointer-events: none; 
+        }
+        
+        @keyframes fuyofuyo { 
+            0% { transform: translate(0, 0) rotate(-10deg); } 
+            100% { transform: translate(30px, -50px) rotate(10deg); } 
+        }
+
+        .pop-common { 
+            position: fixed; 
+            pointer-events: none; 
+            z-index: 1000; 
+            transform: translate(-50%, -50%); 
+        }
+        
+        .pop { 
+            font-size: var(--pop-size); 
+            animation: bowafua 0.7s forwards; 
+        }
+        
+        .pop-giant { 
+            font-size: var(--giant-size); 
+            animation: giantBowafua 1.2s forwards; 
+        }
+
+        @keyframes bowafua { 
+            0%{transform:translate(-50%,-50%) scale(0); opacity:0;} 
+            45%{transform:translate(-50%,-50%) scale(1.5); opacity:1;} 
+            100%{transform:translate(-50%,-50%) scale(1.2); opacity:0;} 
+        }
+        
+        @keyframes giantBowafua { 
+            0%{transform:translate(-50%,-50%) scale(0); opacity:0;} 
+            50%{transform:translate(-50%,-50%) scale(1.4); opacity:1; filter: drop-shadow(0 0 50px gold);} 
+            100%{transform:translate(-50%,-50%) scale(1.1); opacity:0;} 
+        }
+
+        .sparkle { 
+            position: fixed; 
+            font-size: 2.5rem; 
+            pointer-events: none; 
+            z-index: 2000; 
+            animation: sparkleMove 1.8s forwards; 
+        }
+        
+        @keyframes sparkleMove {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(2.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-layer"></div>
+    <div id="heart-layer"></div>
+
+    <script>
+        const heartLayer = document.getElementById('heart-layer');
+        const bgLayer = document.getElementById('bg-layer');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const sparkleCount = isMobile ? 50 : 400;
+
+        // 背景パネル生成
+        const colors = ['#ffe0e6', '#fff5e0', '#e0ffe6', '#e0f5ff', '#f0e0ff', '#ffe6f5', '#fff0e6', '#e6ffe0', '#e0f0ff', '#f5e0ff'];
+        const backColors = ['#ffc0d0', '#ffe0c0', '#c0ffc0', '#c0e0ff', '#e0c0ff', '#ffc0e0', '#ffd0c0', '#d0ffc0', '#c0d0ff', '#e0c0f0'];
+        const panelCount = isMobile ? 10 : 111;
+        for (let i = 0; i < panelCount; i++) {
+            const panel = document.createElement('div');
+            panel.className = 'panel';
+            panel.style.backgroundColor = colors[i % colors.length];
+            panel.style.animationDelay = (i * 0.05) + 's';
+            panel.dataset.frontColor = colors[i % colors.length];
+            panel.dataset.backColor = backColors[i % backColors.length];
+            bgLayer.appendChild(panel);
+        }
+        
+        // パネルの色変化アニメーション
+        setInterval(() => {
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach((panel, i) => {
+                setTimeout(() => {
+                    const front = panel.dataset.frontColor;
+                    const back = panel.dataset.backColor;
+                    panel.dataset.frontColor = back;
+                    panel.dataset.backColor = front;
+                    panel.style.backgroundColor = back;
+                }, i * 30);
+            });
+        }, 8000);
+
+        function createSuperSparkles(x, y) {
+            const dist = isMobile ? 400 : 1200;
+            for (let i = 0; i < sparkleCount; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle'; 
+                s.innerText = '✨';
+                s.style.left = x + 'px'; 
+                s.style.top = y + 'px';
+                s.style.setProperty('--tx', (Math.random() - 0.5) * dist + 'px');
+                s.style.setProperty('--ty', (Math.random() - 0.5) * dist + 'px');
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 2000);
+            }
+        }
+
+        function handleAction(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const touch = e.type.includes('touch') ? e.touches[0] || e.changedTouches[0] : e;
+            const x = touch.clientX;
+            const y = touch.clientY;
+            
+            const p = document.createElement('div');
+            if (Math.random() < 0.1) {
+                p.className = 'pop-common pop-giant';
+                p.innerText = '💩';
+                createSuperSparkles(x, y);
+            } else {
+                p.className = 'pop-common pop';
+                p.innerText = ['🎈', '♨️', '💮'][Math.floor(Math.random() * 3)];
+            }
+            p.style.left = x + 'px'; 
+            p.style.top = y + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1500);
+        }
+
+        // ハート生成
+        const icons = ['💚','💛','🩷','❤️','🧡','💙','🩵','💜','🤍','♥️',];
+        const heartCount = isMobile ? 30 : 111;
+        
+        for (let i = 0; i < heartCount; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'heart-wrapper';
+            wrapper.style.left = (Math.random() * 80 + 10) + '%';
+            wrapper.style.top = (Math.random() * 80 + 10) + '%';
+            wrapper.style.animationDelay = (Math.random() * 5) + 's';
+            
+            const h = document.createElement('div');
+            h.className = 'heart';
+            h.innerText = icons[i % icons.length];
+            
+            const aura = document.createElement('div');
+            aura.className = 'aura';
+
+            wrapper.appendChild(aura);
+            wrapper.appendChild(h);
+
+            // タッチとマウス両対応
+            wrapper.addEventListener('touchstart', handleAction, {passive: false});
+            wrapper.addEventListener('click', handleAction);
+            
+            heartLayer.appendChild(wrapper);
+        }
+
+        // スクロール防止
+        document.body.addEventListener('touchmove', (e) => e.preventDefault(), {passive: false});
+    </script>
+</body>
+</html>
