@@ -8,7 +8,7 @@
         :root {
             --pop-size: 10rem;
             --giant-size: 50rem;
-            --heart-size: 100px;
+            --heart-size: 80px;
             --sparkle-dist: 1200px;
         }
 
@@ -16,18 +16,20 @@
             :root {
                 --pop-size: 6rem;
                 --giant-size: 18rem;
-                --heart-size: 90px;
+                --heart-size: 60px;
                 --sparkle-dist: 450px;
             }
         }
 
         * {
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #fffafb;
+            overflow: hidden; 
+            background-color: #070720;
             touch-action: none;
             font-family: sans-serif;
             -webkit-user-select: none;
@@ -35,48 +37,71 @@
             position: fixed;
         }
         
+        img {
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+        
         #back-link {
             position: fixed;
             top: 15px;
             right: 15px;
             z-index: 3000;
-            background: rgba(255, 255, 255, 0.7);
-            color: #1a1a1a;
+            background: rgba(255, 122, 217, 0.25);
+            color: #4de1ff;
             text-decoration: none;
             padding: 8px 16px;
             border-radius: 20px;
             font-family: 'Courier New', monospace, sans-serif;
             font-weight: bold;
             font-size: 14px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 0 12px #ff7ad9, inset 0 0 8px #ff7ad9;
+            border: 1px solid #4de1ff;
+            text-shadow: 0 0 8px #4de1ff;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
         }
         #back-link:hover {
             transform: scale(1.05);
-            background: rgba(255, 255, 255, 1);
+            background: rgba(255, 122, 217, 0.45);
+            box-shadow: 0 0 22px #ff7ad9, 0 0 12px #4de1ff;
         }
 
         #bg-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            display: flex; z-index: 1; opacity: 0.5; pointer-events: none; 
+            display: flex; z-index: 1; pointer-events: none;
+            contain: strict;
         }
         .panel { 
             flex: 1; height: 100%; 
-            transition: background-color 1.5s ease;
             pointer-events: none;
-            animation: panelFlip 8s infinite;
-            transform-style: preserve-3d;
+            background-color: var(--c1);
+            box-shadow: inset 0 0 10px var(--glow);
+            will-change: transform;
+            backface-visibility: hidden;
+            animation:
+                panelScale 8s infinite linear,
+                panelColor 8s infinite linear;
+            animation-delay: var(--d), var(--d);
         }
         
-        @keyframes panelFlip {
-            0%, 100% { transform: rotateY(0deg); }
-            50% { transform: rotateY(180deg); }
+        @keyframes panelScale {
+            0%   { transform: scaleX(1);  animation-timing-function: ease-in; }
+            25%  { transform: scaleX(0);  animation-timing-function: ease-out; }
+            50%  { transform: scaleX(-1); animation-timing-function: ease-in; }
+            75%  { transform: scaleX(0);  animation-timing-function: ease-out; }
+            100% { transform: scaleX(1); }
+        }
+
+        @keyframes panelColor {
+            0%, 25%      { background-color: var(--c1); }
+            25.01%, 75%  { background-color: var(--c2); }
+            75.01%, 100% { background-color: var(--c1); }
         }
 
         #heart-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             z-index: 10; pointer-events: none;
+            contain: layout style;
         }
         
         .heart-wrapper {
@@ -86,18 +111,28 @@
             display: flex; 
             justify-content: center; 
             align-items: center;
+            will-change: transform;
             animation: fuyofuyo 11s infinite alternate ease-in-out;
             pointer-events: auto;
             cursor: pointer;
         }
 
         .aura {
-            position: absolute; width: 85%; height: 85%; border-radius: 50%;
-            background: conic-gradient(from 0deg, #ffb7b7, #fffbb7, #b7ffb7, #b7ffff, #b7d8ff, #e2b7ff, #ffb7b7);
-            filter: blur(15px); opacity: 0.7; 
+            position: absolute; width: 110%; height: 110%; border-radius: 50%;
+            background: conic-gradient(from 0deg, #ff7ad9, #ffe84a, #b6ff5c, #4de1ff, #b68cff, #ff7ad9);
+            filter: blur(10px); opacity: 0.8; 
             animation: auraSpin 3s infinite linear; 
             z-index: -1;
             pointer-events: none;
+            will-change: transform;
+        }
+
+        .aura-sprite .aura {
+            width: 180%;
+            height: 180%;
+            border-radius: 0;
+            background: var(--aura-img) center / 100% 100% no-repeat;
+            filter: none;
         }
         
         @keyframes auraSpin { 
@@ -106,9 +141,41 @@
             100%{transform:rotate(360deg) scale(1);} 
         }
 
-        .heart { 
-            font-size: calc(var(--heart-size) * 0.5); 
-            pointer-events: none; 
+        .css-heart {
+            position: relative;
+            width: calc(var(--heart-size) * 0.45);
+            height: calc(var(--heart-size) * 0.45);
+            background-color: var(--heart-color, #ff7ad9);
+            transform: rotate(-45deg);
+            pointer-events: none;
+            box-shadow: 0 0 10px var(--heart-color, #ff7ad9);
+            will-change: transform;
+            animation: heartPulse 1.8s infinite alternate ease-in-out;
+        }
+
+        .css-heart::before,
+        .css-heart::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--heart-color, #ff7ad9);
+            border-radius: 50%;
+        }
+
+        .css-heart::before {
+            top: -50%;
+            left: 0;
+        }
+
+        .css-heart::after {
+            left: 50%;
+            top: 0;
+        }
+
+        @keyframes heartPulse {
+            0% { transform: rotate(-45deg) scale(0.9); }
+            100% { transform: rotate(-45deg) scale(1.1); }
         }
         
         @keyframes fuyofuyo { 
@@ -121,16 +188,19 @@
             pointer-events: none; 
             z-index: 1000; 
             transform: translate(-50%, -50%); 
+            will-change: transform, opacity;
         }
         
         .pop { 
             font-size: var(--pop-size); 
             animation: bowafua 0.7s forwards; 
+            text-shadow: 0 0 20px #ff7ad9, 0 0 40px #4de1ff;
         }
         
         .pop-giant { 
             font-size: var(--giant-size); 
             animation: giantBowafua 1.2s forwards; 
+            text-shadow: 0 0 60px #ffe84a, 0 0 100px #ff7ad9;
         }
 
         @keyframes bowafua { 
@@ -141,74 +211,234 @@
         
         @keyframes giantBowafua { 
             0%{transform:translate(-50%,-50%) scale(0); opacity:0;} 
-            50%{transform:translate(-50%,-50%) scale(1.4); opacity:1; filter: drop-shadow(0 0 50px gold);} 
+            50%{transform:translate(-50%,-50%) scale(1.4); opacity:1;} 
             100%{transform:translate(-50%,-50%) scale(1.1); opacity:0;} 
         }
 
-        .sparkle { 
-            position: fixed; 
-            font-size: 2.5rem; 
-            pointer-events: none; 
-            z-index: 2000; 
-            animation: sparkleMove 1.8s forwards; 
-        }
-        
-        @keyframes sparkleMove {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(2.5); opacity: 0; }
+        #spark-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2000;
+            pointer-events: none;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <a href="https://megakirara.github.io/-KINOKO/baiyo.html" id="back-link">( 👁️ _ 👁️ )戻る❓</a>
+    <a href="https://megakirara.github.io/-KINOKO/game.html" id="back-link">( 👁️ _ 👁️ )戻る❓</a>
 
     <div id="bg-layer"></div>
     <div id="heart-layer"></div>
+    <canvas id="spark-canvas" aria-hidden="true"></canvas>
 
     <script>
+        "use strict";
+
+        document.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener("dragstart", (e) => {
+            if (e.target.tagName === "IMG") {
+                e.preventDefault();
+            }
+        });
+
         const heartLayer = document.getElementById('heart-layer');
         const bgLayer = document.getElementById('bg-layer');
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const sparkleCount = isMobile ? 50 : 400;
+        const sparkleCount = isMobile ? 50 : 250;
 
-        const colors = ['#ffe0e6', '#fff5e0', '#e0ffe6', '#e0f5ff', '#f0e0ff', '#ffe6f5', '#fff0e6', '#e6ffe0', '#e0f0ff', '#f5e0ff'];
-        const backColors = ['#ffc0d0', '#ffe0c0', '#c0ffc0', '#c0e0ff', '#e0c0ff', '#ffc0e0', '#ffd0c0', '#d0ffc0', '#c0d0ff', '#e0c0f0'];
-        const panelCount = isMobile ? 10 : 111;
+        const neonColors = ['#ff7ad9', '#ffe84a', '#4de1ff', '#b6ff5c', '#b68cff', '#ff36bd', '#00eaff', '#ffcc00'];
+        const neonBackColors = ['#230a38', '#38300a', '#0a3238', '#1f380a', '#220a38', '#380a27', '#0a2f38', '#382a0a'];
+
+        function hexToRgba(hex, alpha) {
+            const n = parseInt(hex.slice(1), 16);
+            return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
+        }
+
+        const PANEL_ALPHA = 0.65;
+        const panelCount = isMobile ? 10 : 80;
+        const panelFragment = document.createDocumentFragment();
+
         for (let i = 0; i < panelCount; i++) {
             const panel = document.createElement('div');
             panel.className = 'panel';
-            panel.style.backgroundColor = colors[i % colors.length];
-            panel.style.animationDelay = (i * 0.05) + 's';
-            panel.dataset.frontColor = colors[i % colors.length];
-            panel.dataset.backColor = backColors[i % backColors.length];
-            bgLayer.appendChild(panel);
+
+            panel.style.setProperty('--c1', hexToRgba(neonBackColors[i % neonBackColors.length], PANEL_ALPHA));
+            panel.style.setProperty('--c2', hexToRgba(neonBackColors[(i + 3) % neonBackColors.length], PANEL_ALPHA));
+            panel.style.setProperty('--glow', hexToRgba(neonColors[i % neonColors.length], PANEL_ALPHA));
+            panel.style.setProperty('--d', (i * 0.05) + 's');
+
+            panelFragment.appendChild(panel);
         }
-        
-        setInterval(() => {
-            const panels = document.querySelectorAll('.panel');
-            panels.forEach((panel, i) => {
-                setTimeout(() => {
-                    const front = panel.dataset.frontColor;
-                    const back = panel.dataset.backColor;
-                    panel.dataset.frontColor = back;
-                    panel.dataset.backColor = front;
-                    panel.style.backgroundColor = back;
-                }, i * 30);
-            });
-        }, 8000);
+
+        bgLayer.appendChild(panelFragment);
+
+        (function makeAuraSprite() {
+            try {
+                const size = 140;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+
+                const g = canvas.getContext('2d');
+                if (!g || typeof g.createConicGradient !== 'function') return;
+
+                const conic = g.createConicGradient(-Math.PI / 2, size / 2, size / 2);
+                const stops = ['#ff7ad9', '#ffe84a', '#b6ff5c', '#4de1ff', '#b68cff', '#ff7ad9'];
+                stops.forEach((color, i) => conic.addColorStop(i / (stops.length - 1), color));
+
+                g.fillStyle = conic;
+                g.fillRect(0, 0, size, size);
+
+                g.globalCompositeOperation = 'destination-in';
+
+                const fade = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+                fade.addColorStop(0.00, 'rgba(0, 0, 0, 1)');
+                fade.addColorStop(0.35, 'rgba(0, 0, 0, 0.9)');
+                fade.addColorStop(0.65, 'rgba(0, 0, 0, 0.4)');
+                fade.addColorStop(1.00, 'rgba(0, 0, 0, 0)');
+
+                g.fillStyle = fade;
+                g.fillRect(0, 0, size, size);
+
+                document.documentElement.style.setProperty(
+                    '--aura-img',
+                    `url(${canvas.toDataURL('image/png')})`
+                );
+                document.documentElement.classList.add('aura-sprite');
+            } catch (error) {
+                console.warn('光の画像スプライト化スキップ:', error);
+            }
+        })();
+
+        const sparkCanvas = document.getElementById('spark-canvas');
+        const sparkCtx = sparkCanvas.getContext('2d');
+        const sparkColors = ['#ff7ad9', '#ffe84a', '#4de1ff', '#b6ff5c', '#ffffff'];
+        const SPARK_DURATION = 1600; 
+        const SPARK_MAX_SCALE = 2.5; 
+
+        function makeBezier(x1, y1, x2, y2) {
+            const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+            const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+
+            const sampleX = (t) => ((ax * t + bx) * t + cx) * t;
+            const sampleY = (t) => ((ay * t + by) * t + cy) * t;
+            const slopeX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+
+            return (x) => {
+                if (x <= 0) return 0;
+                if (x >= 1) return 1;
+
+                let t = x;
+                for (let i = 0; i < 8; i++) {
+                    const error = sampleX(t) - x;
+                    if (Math.abs(error) < 1e-5) break;
+                    const slope = slopeX(t);
+                    if (Math.abs(slope) < 1e-6) break;
+                    t -= error / slope;
+                }
+                return sampleY(t);
+            };
+        }
+
+        const ease = makeBezier(0.25, 0.1, 0.25, 1);
+
+        function makeSparkleSprite(color) {
+            const size = 160;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+
+            const g = canvas.getContext('2d');
+            g.font = '64px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+            g.textAlign = 'center';
+            g.textBaseline = 'middle';
+            g.shadowColor = color;
+            g.shadowBlur = 30;
+            g.fillText('✨', size / 2, size / 2);
+
+            return canvas;
+        }
+
+        const sparkleSprites = sparkColors.map(makeSparkleSprite);
+
+        let particles = [];
+        let sparkRafId = null;
+
+        function resizeSparkCanvas() {
+            sparkCanvas.width = window.innerWidth;
+            sparkCanvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', () => {
+            if (particles.length) resizeSparkCanvas();
+        }, { passive: true });
+
+        function drawSparkles(now) {
+            sparkCtx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+
+            const alive = [];
+
+            for (const p of particles) {
+                const t = (now - p.start) / SPARK_DURATION;
+
+                if (t >= 1) continue;
+
+                alive.push(p);
+
+                const e = ease(Math.max(t, 0));
+                const alpha = 1 - e;
+
+                if (alpha < 0.02) continue;
+
+                const drawSize = 80 * SPARK_MAX_SCALE * e;
+                if (drawSize < 1) continue;
+
+                sparkCtx.globalAlpha = alpha;
+                sparkCtx.drawImage(
+                    p.sprite,
+                    p.x + p.tx * e - drawSize / 2,
+                    p.y + p.ty * e - drawSize / 2,
+                    drawSize,
+                    drawSize
+                );
+            }
+
+            sparkCtx.globalAlpha = 1;
+            particles = alive;
+
+            if (particles.length) {
+                sparkRafId = requestAnimationFrame(drawSparkles);
+            } else {
+                sparkRafId = null;
+                sparkCanvas.style.display = 'none';
+            }
+        }
 
         function createSuperSparkles(x, y) {
-            const dist = isMobile ? 400 : 1200;
+            const dist = isMobile ? 400 : 1000;
+            const now = performance.now();
+
             for (let i = 0; i < sparkleCount; i++) {
-                const s = document.createElement('div');
-                s.className = 'sparkle'; 
-                s.innerText = '✨';
-                s.style.left = x + 'px'; 
-                s.style.top = y + 'px';
-                s.style.setProperty('--tx', (Math.random() - 0.5) * dist + 'px');
-                s.style.setProperty('--ty', (Math.random() - 0.5) * dist + 'px');
-                document.body.appendChild(s);
-                setTimeout(() => s.remove(), 2000);
+                particles.push({
+                    x,
+                    y,
+                    tx: (Math.random() - 0.5) * dist,
+                    ty: (Math.random() - 0.5) * dist,
+                    sprite: sparkleSprites[Math.floor(Math.random() * sparkleSprites.length)],
+                    start: now
+                });
+            }
+
+            if (!sparkRafId) {
+                resizeSparkCanvas();
+                sparkCanvas.style.display = 'block';
+                sparkRafId = requestAnimationFrame(drawSparkles);
             }
         }
 
@@ -221,46 +451,54 @@
             const y = touch.clientY;
             
             const p = document.createElement('div');
-            if (Math.random() < 0.1) {
+            if (Math.random() < 0.12) {
                 p.className = 'pop-common pop-giant';
-                p.innerText = '💩';
+                p.textContent = '💩';
                 createSuperSparkles(x, y);
             } else {
                 p.className = 'pop-common pop';
-                p.innerText = ['🎈', '♨️', '💮'][Math.floor(Math.random() * 3)];
+                p.textContent = ['🎈', '♨️', '💮'][Math.floor(Math.random() * 3)];
             }
             p.style.left = x + 'px'; 
             p.style.top = y + 'px';
             document.body.appendChild(p);
-            setTimeout(() => p.remove(), 1500);
+            setTimeout(() => p.remove(), 1200);
         }
 
-        // ハート生成
-        const icons = ['💚','💛','🩷','❤️','🧡','💙','🩵','💜','🤍','♥️',];
-        const heartCount = isMobile ? 30 : 111;
+        const heartColors = ['#ff7ad9', '#ffe84a', '#4de1ff', '#b6ff5c', '#b68cff', '#ff36bd', '#00eaff'];
+        const heartCount = isMobile ? 24 : 70;
+        const heartFragment = document.createDocumentFragment();
         
         for (let i = 0; i < heartCount; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'heart-wrapper';
-            wrapper.style.left = (Math.random() * 80 + 10) + '%';
-            wrapper.style.top = (Math.random() * 80 + 10) + '%';
+            wrapper.style.left = (Math.random() * 85 + 5) + '%';
+            wrapper.style.top = (Math.random() * 85 + 5) + '%';
             wrapper.style.animationDelay = (Math.random() * 5) + 's';
             
-            const h = document.createElement('div');
-            h.className = 'heart';
-            h.innerText = icons[i % icons.length];
+            const cssHeart = document.createElement('div');
+            cssHeart.className = 'css-heart';
+            const color = heartColors[i % heartColors.length];
+            cssHeart.style.setProperty('--heart-color', color);
             
             const aura = document.createElement('div');
             aura.className = 'aura';
 
             wrapper.appendChild(aura);
-            wrapper.appendChild(h);
+            wrapper.appendChild(cssHeart);
 
-            wrapper.addEventListener('touchstart', handleAction, {passive: false});
-            wrapper.addEventListener('click', handleAction);
-            
-            heartLayer.appendChild(wrapper);
+            heartFragment.appendChild(wrapper);
         }
+
+        heartLayer.appendChild(heartFragment);
+
+        heartLayer.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.heart-wrapper')) handleAction(e);
+        }, { passive: false });
+
+        heartLayer.addEventListener('click', (e) => {
+            if (e.target.closest('.heart-wrapper')) handleAction(e);
+        });
 
         document.body.addEventListener('touchmove', (e) => e.preventDefault(), {passive: false});
     </script>
